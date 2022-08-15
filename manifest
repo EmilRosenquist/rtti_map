@@ -8,3 +8,4 @@ url: https://example.org/rtti_map
 email: emil.rosenquist@gmail.com
 depends: * build2 >= 0.14.0
 depends: * bpkg >= 0.14.0
+requires: c++20
