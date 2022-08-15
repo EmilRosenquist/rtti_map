@@ -40,7 +40,11 @@ int main ()
     assert(insertionResult3);
     assert(!insertionResult4);
 
-    struct A{ int b, c; };
+    struct A
+    { 
+      A(int b, int c) : b(b), c(c){}
+      int b, c;
+    };
     const auto emplaceResult1 = map.emplace<A>(5, 5);
     const auto emplaceResult2 = map.emplace<int>(6);
 
