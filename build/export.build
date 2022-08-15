@@ -1,0 +1,6 @@
+$out_root/
+{
+  include rtti_map/
+}
+
+export $out_root/rtti_map/$import.target

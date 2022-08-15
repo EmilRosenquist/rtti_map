@@ -1,0 +1,3 @@
+import libs = rtti_map%lib{rtti_map}
+
+exe{driver}: {hxx ixx txx cxx}{**} $libs testscript{**}
