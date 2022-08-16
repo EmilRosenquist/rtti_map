@@ -6,9 +6,12 @@
 
 #undef NDEBUG
 #include <cassert>
+#include <iostream>
 
 int main ()
 {
+  // rtti::map
+
   // Capacity tests
   {
     auto map = rtti::map{};
@@ -77,9 +80,95 @@ int main ()
     assert(map.contains<int>());
     assert(map.at<int>() == 1);
 
+    const auto range = map.equal_range<int>();
+    assert(range[0] == 1);
+
     auto& elementReference = map.at<int>();
     elementReference = 2;
 
     assert(map.at<int>() == 2);
+
+    const auto range2 = map.equal_range<int>();
+    assert(range2[0] == 2);
+
+    auto& elementReference2 = range2[0].get();
+    elementReference2 = 3;
+
+    assert(map.at<int>() == 3);
+  }
+
+  // rtti::multimap
+
+  // Capacity tests
+  {
+    auto map = rtti::multimap{};
+
+    assert(map.empty());
+    assert(map.size() == 0);
+
+    map.insert<int>(1);
+    map.insert<int>(2);
+    assert(!map.empty());
+    assert(map.size() == 2);
+  }
+
+  // Modifiers tests
+  {
+    auto map = rtti::multimap{};
+
+    map.insert<int>(1);
+    map.insert<int>(2);
+
+    const auto range = map.equal_range<int>();
+    assert(range.size() == 2);
+    assert(std::count(std::cbegin(range), std::cend(range), 1) == 1);
+    assert(std::count(std::cbegin(range), std::cend(range), 2) == 1);
+
+    struct A
+    {
+        A(int b, int c) : b(b), c(c) {}
+        int b, c;
+    };
+    map.emplace<A>(3, 3);
+    map.emplace<int>(4);
+
+    const auto range2 = map.equal_range<A>();
+    const auto range3 = map.equal_range<int>();
+    assert(range2[0].get().b == 3 && range2[0].get().c == 3);
+    assert(std::count(std::cbegin(range3), std::cend(range3), 1) == 1);
+    assert(std::count(std::cbegin(range3), std::cend(range3), 2) == 1);
+    assert(std::count(std::cbegin(range3), std::cend(range3), 4) == 1);
+
+    const auto eraseResult1 = map.erase<int>();
+    const auto eraseResult2 = map.erase<float>();
+
+    assert(eraseResult1 == 3);
+    assert(eraseResult2 == 0);
+
+    map.clear();
+    assert(map.empty());
+  }
+
+  // Lookup tests
+  {
+    auto map = rtti::multimap{};
+
+    // Empty initialized
+    assert(map.count<int>() == 0);
+    assert(!map.contains<int>());
+
+    map.insert<int>(1);
+
+    assert(map.count<int>() == 1);
+    assert(map.contains<int>());
+
+    const auto range = map.equal_range<int>();
+    assert(range[0] == 1);
+
+    auto& elementReference = range[0].get();
+    elementReference = 2;
+
+    const auto range2 = map.equal_range<int>();
+    assert(range2[0] == 2);
   }
 }
